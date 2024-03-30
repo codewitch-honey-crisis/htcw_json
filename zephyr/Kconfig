@@ -1,0 +1,5 @@
+menu "htcw_json configuration"
+  config HTCW_JSON
+    bool "Enable HTCW_JSON"
+    default n
+endmenu
