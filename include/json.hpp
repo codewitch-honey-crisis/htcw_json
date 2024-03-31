@@ -55,6 +55,7 @@ namespace {
 }
 /// @brief A common interface for any JSON reader
 class json_reader_base {
+public:
     /// @brief The node type under the cursor
     /// @return A json_node_type indicating the node
     virtual json_node_type node_type() const = 0;
