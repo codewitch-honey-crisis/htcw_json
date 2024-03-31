@@ -7,6 +7,7 @@
 #include <io_lex_source.hpp>
 namespace json {
 using stream = io::stream;
+/// @brief Indicates the type of node currently under the cursor
 enum struct json_node_type {
     error = -3,
     end_document = -2,
@@ -20,6 +21,8 @@ enum struct json_node_type {
     value_part = 6,
     end_value_part = 7
 };
+
+/// @brief Indicates the typed value under the cursor, if any
 enum struct json_value_type {
     none = 0,
     null = 1,
@@ -27,6 +30,8 @@ enum struct json_value_type {
     integer = 3,
     real = 4
 };
+
+/// @brief Indicates the current error value
 enum struct json_error {
     none = 0,
     unterminated_object,
@@ -48,8 +53,47 @@ namespace {
         return static_cast<typename remove_reference<T>::type&&>(arg);
     }
 }
+/// @brief A common interface for any JSON reader
+class json_reader_base {
+    /// @brief The node type under the cursor
+    /// @return A json_node_type indicating the node
+    virtual json_node_type node_type() const = 0;
+    /// @brief The typed value under the cursor, if any
+    /// @return A json_value_type indicating the type
+    virtual json_value_type value_type() const = 0;
+    /// @brief Indicates the error if any
+    /// @return A json_error indicating the error
+    virtual json_error error() const = 0;
+    /// @brief Retrieves the current typed value as an integer
+    /// @return The integer value
+    virtual long long value_int() const=0;
+    /// @brief Retrieves the current typed value as floating point
+    /// @return The real number value
+    virtual double value_real() const=0;
+    /// @brief Retreives the current typed value as a boolean
+    /// @return The bool value
+    virtual bool value_bool() const=0;
+    /// @brief Returns the current string value under the cursor
+    /// @return The string value
+    virtual const char* value() const=0;
+    /// @brief Indicates whether or not the node type is a value, value_part, or end_value_part
+    /// @return True if it's a value, otherwise false
+    virtual bool is_value() const=0;
+    /// @brief Indicates whether or not strings are escaped and dequoted
+    /// @return True if not escaped and dequoted, otherwise false
+    virtual bool raw_strings() const=0;
+    /// @brief Sets whether or not the strings are escaped and dequoted
+    /// @param value True if the strings are not escaped and dequoted, otherwise false
+    virtual void raw_strings(bool value)=0;
+    /// @brief Indicates the current nested object depth
+    /// @return The nesting depth
+    virtual unsigned int depth() const=0;
+    /// @brief Reads the next element
+    /// @return True if successful, otherwise error or no more data
+    virtual bool read()=0;
+};
 template<size_t CaptureSize=1024>
-class json_reader_ex {
+class json_reader_ex : public json_reader_base {
 public:
     constexpr static const size_t capture_size = CaptureSize;
 private:
@@ -808,10 +852,17 @@ public:
         do_move(rhs);
         return *this;
     }
-    json_node_type node_type() const {
+    /// @brief The node type under the cursor
+    /// @return A json_node_type indicating the node
+    virtual json_node_type node_type() const override {
+        if(m_error!=0) {
+            return json_node_type::error;
+        }
         return (json_node_type)m_state;
     }
-    json_value_type value_type() const {
+    /// @brief The typed value under the cursor, if any
+    /// @return A json_value_type indicating the type
+    virtual json_value_type value_type() const override {
         if(m_state == (int)json_node_type::value ||
             /*m_state == (int)json_node_type::value_part ||*/ // don't have the whole value yet
             m_state == (int)json_node_type::end_value_part) {
@@ -819,7 +870,14 @@ public:
         }
         return json_value_type::none;
     }
-    long long value_int() const {
+    /// @brief Indicates the error if any
+    /// @return A json_error indicating the error
+    virtual json_error error() const override {
+        return (json_error)m_error;
+    }
+    /// @brief Retrieves the current typed value as an integer
+    /// @return The integer value
+    virtual long long value_int() const override {
         json_value_type vt = value_type();
         if(vt==json_value_type::integer || vt==json_value_type::real) {
             return m_int;
@@ -829,7 +887,9 @@ public:
         }
         return 0;
     }
-    double value_real() const {
+    /// @brief Retrieves the current typed value as floating point
+    /// @return The real number value
+    virtual double value_real() const override {
         json_value_type vt = value_type();
         if(vt==json_value_type::integer || vt==json_value_type::real) {
             return m_real;
@@ -839,31 +899,45 @@ public:
         }
         return 0.0;
     }
-    bool value_bool() const {
+    /// @brief Retreives the current typed value as a boolean
+    /// @return The bool value
+    virtual bool value_bool() const override {
         json_value_type vt = value_type();
         if(vt==json_value_type::boolean || vt==json_value_type::integer || vt==json_value_type::real) {
             return m_int!=0;
         }
         return false;
     }
-    const char* value() const {
+    /// @brief Returns the current string value under the cursor
+    /// @return The string value
+    virtual const char* value() const override {
         return m_source.const_capture_buffer();
     }
-    bool is_value() const {
+    /// @brief Indicates whether or not the node type is a value, value_part, or end_value_part
+    /// @return True if it's a value, otherwise false
+    virtual bool is_value() const override {
         return m_state == (int)json_node_type::value ||
             m_state == (int)json_node_type::value_part ||
             m_state == (int)json_node_type::end_value_part;
     }
-    bool raw_strings() const {
+    /// @brief Indicates whether or not strings are escaped and dequoted
+    /// @return True if not escaped and dequoted, otherwise false
+    virtual bool raw_strings() const override {
         return m_raw_strings;
     }
-    void raw_strings(bool value) {
+    /// @brief Sets whether or not the strings are escaped and dequoted
+    /// @param value True if the strings are not escaped and dequoted, otherwise false
+    virtual void raw_strings(bool value) override {
         m_raw_strings = value;
     }
-    unsigned int depth() const {
+    /// @brief Indicates the current nested object depth
+    /// @return The nesting depth
+    virtual unsigned int depth() const override {
         return m_depth;
     }
-    bool read() {
+    /// @brief Reads the next element
+    /// @return True if successful, otherwise error or no more data
+    virtual bool read() override {
         if(m_error!=0) {
             return false;
         }
@@ -973,9 +1047,7 @@ public:
         }   
         return true;    
     }
-
 };
 using json_reader = json_reader_ex<1024>;
 }
-
 #endif // HTCW_JSON_HPP
