@@ -846,6 +846,9 @@ public:
     json_reader_ex(stream& input) : m_source(&input),m_state((int)json_node_type::initial),m_depth(0), m_error(0),m_raw_strings(false) {
 
     }
+    json_reader_ex() : m_source(nullptr),m_state((int)json_node_type::error),m_depth(0),m_error(-1),m_raw_strings(false) {
+
+    }
     json_reader_ex(json_reader_ex&& rhs) {
         do_move(rhs);
     }
@@ -935,6 +938,17 @@ public:
     /// @return The nesting depth
     virtual unsigned int depth() const override {
         return m_depth;
+    }
+    /// @brief Sets the stream and resets the reader
+    /// @param stream The new stream
+    virtual void set(io::stream& stream) {
+        if(stream.caps().read==0) {
+            return;
+        }
+        m_source = &stream;
+        m_state = (int)json_node_type::initial;
+        m_depth = 0;
+        m_error = 0;
     }
     /// @brief Reads the next element
     /// @return True if successful, otherwise error or no more data
