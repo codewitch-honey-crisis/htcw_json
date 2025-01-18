@@ -7,8 +7,8 @@ if(CONFIG_HTCW_JSON)
 zephyr_library()
 
 #include_directories(${ZEPHYR_BASE}/lib/???/htcw_json)
-zephyr_include_directories(../include/)
-zephyr_library_include_directories(../include/)
+zephyr_include_directories(../src/)
+zephyr_library_include_directories(../src/)
 zephyr_interface_library_named(HTCW_JSON)
 
 

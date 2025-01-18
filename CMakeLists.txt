@@ -9,6 +9,6 @@ add_library(htcw_json INTERFACE)
 target_link_libraries(htcw_io htcw_bits)
 
 target_include_directories(htcw_json INTERFACE
-    "${PROJECT_SOURCE_DIR}/include"
+    "${PROJECT_SOURCE_DIR}/src"
     "${PROJECT_BINARY_DIR}"
 )
