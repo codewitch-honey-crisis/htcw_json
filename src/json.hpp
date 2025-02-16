@@ -129,7 +129,7 @@ private:
     json_reader_ex(const json_reader_ex& rhs)=delete;
     json_reader_ex& operator=(const json_reader_ex& rhs)=delete;
     void skip_whitespace() {
-        while(m_source.current()==' ' ||
+        while(m_source.current()==' ' || m_source.current()=='\r' || m_source.current()=='\v' ||
                 m_source.current()=='\t' || m_source.current()=='\n') {
             if(!m_source.advance()) {
                 break;

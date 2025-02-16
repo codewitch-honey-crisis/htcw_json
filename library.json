@@ -1,6 +1,6 @@
 {
     "name": "htcw_json",
-    "version": "0.2.3",
+    "version": "0.2.4",
     "description": "Provides a minimalist streaming JSON pull parser",
     "keywords": ["JSON","stream","bulk","data"],
     "authors": {
