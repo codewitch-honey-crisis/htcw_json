@@ -1,6 +1,6 @@
 {
     "name": "htcw_json",
-    "version": "0.2.4",
+    "version": "0.2.5",
     "description": "Provides a minimalist streaming JSON pull parser",
     "keywords": ["JSON","stream","bulk","data"],
     "authors": {
@@ -20,7 +20,7 @@
         "url": "https://github.com/codewitch-honey-crisis/htcw_json.git"
     },
     "dependencies": {
-        "codewitch-honey-crisis/htcw_io": "^1.2.3"
+        "codewitch-honey-crisis/htcw_io": "^1.4.0"
     },
     "examples": [
         {
