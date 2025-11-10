@@ -11,7 +11,7 @@ lib_deps =
 	codewitch-honey-crisis/htcw_json
 ```
 
-See https://www.codeproject.com/Tips/5382125/IP-Geolocation-with-an-ESP32-and-Arduino for a simple real world example
+See [IP Geolocation with an ESP32 and Arduino at CodeProject](https://www.codeproject.com/articles/IP-Geolocation-with-an-ESP32-and-Arduino) for a simple real world example
 
 ```cpp
 #include <stdio.h>
