@@ -1,0 +1,7 @@
+version: "0.2.6"
+description: "Provides JSON peephole parsing"
+dependencies:
+  idf:
+    version: ">=5.0.0"
+  codewitch-honey-crisis/htcw_io: "^1.4.1"
+  
