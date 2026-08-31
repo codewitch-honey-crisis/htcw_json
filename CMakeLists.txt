@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.24)
 if(NOT DEFINED IDF_TARGET)
-    project(htcw_json VERSION 0.2.6)
+    project(htcw_json VERSION 0.2.7)
     set(CMAKE_CXX_STANDARD 17)
     set(CMAKE_CXX_STANDARD_REQUIRED True)
     set(CMAKE_STATIC_LIBRARY_PREFIX "")
@@ -9,9 +9,9 @@ if(NOT DEFINED IDF_TARGET)
     include(FetchContent)
     FetchContent_Declare(htcw_io
         GIT_REPOSITORY https://github.com/codewitch-honey-crisis/htcw_io.git
-        GIT_TAG 1.4.1
+        GIT_TAG 1.4.3
         GIT_SHALLOW ON
-        FIND_PACKAGE_ARGS 1.4.1
+        FIND_PACKAGE_ARGS 1.4.3
     )
 
     FetchContent_MakeAvailable(htcw_io)
